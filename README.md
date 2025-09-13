@@ -22,22 +22,21 @@
 - 🎨 **Modern UI/UX**: Glass morphism design with smooth animations
 - 🌐 **Global Community**: Join 500+ contributors from 21+ countries
 
-## 🎯 Live Demo
-
-🔗 **[Try Brandify Now](https://ileshdevx.github.io/Brandify/)**
-
 ## 📸 Screenshots
 
 ### Hero Section
 Beautiful gradient hero with call-to-action and smooth animations
+
 ![Hero Section](screenshots/Hero-desktop.png) 
 
 ### Name Generator Form
 Intuitive form with industry selection, keyword input, tone selection, and length preferences
+
 ![Menu Section](screenshots/Generator.png)
 
 ### Results Display
 Professional name cards with taglines, domain availability, and favorites functionality
+
 ![Menu Section](screenshots/Results.png)
 
 ## 🛠️ Tech Stack
