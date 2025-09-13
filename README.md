@@ -22,22 +22,21 @@
 - 🎨 **Modern UI/UX**: Glass morphism design with smooth animations
 - 🌐 **Global Community**: Join 500+ contributors from 21+ countries
 
-## 🎯 Live Demo
-
-🔗 **[Try Brandify Now](https://ileshdevx.github.io/Brandify/)**
-
 ## 📸 Screenshots
 
 ### Hero Section
 Beautiful gradient hero with call-to-action and smooth animations
+
 ![Hero Section](screenshots/Hero-desktop.png) 
 
 ### Name Generator Form
 Intuitive form with industry selection, keyword input, tone selection, and length preferences
+
 ![Menu Section](screenshots/Generator.png)
 
 ### Results Display
 Professional name cards with taglines, domain availability, and favorites functionality
+
 ![Menu Section](screenshots/Results.png)
 
 ## 🛠️ Tech Stack
@@ -173,10 +172,6 @@ npx serve .
 [![Facebook](https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/share/1Akw57qagC/)
 [![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@ileshpatel666)
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/IleshDevX)
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🤝 Contributing
 
