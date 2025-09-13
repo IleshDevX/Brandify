@@ -30,15 +30,15 @@
 
 ### Hero Section
 Beautiful gradient hero with call-to-action and smooth animations
+![Hero Section](screenshots/Hero-desktop.png) 
 
 ### Name Generator Form
 Intuitive form with industry selection, keyword input, tone selection, and length preferences
+![Menu Section](screenshots/Generator.png)
 
 ### Results Display
 Professional name cards with taglines, domain availability, and favorites functionality
-
-### About Section
-Mission statement, statistics, and developer profile with technical skills showcase
+![Menu Section](screenshots/Results.png)
 
 ## 🛠️ Tech Stack
 
