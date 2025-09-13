@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brandify - Free AI Startup & Product Name Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        playfair: ['"Playfair Display"', 'serif'],
+                    },
+                    colors: {
+                        background: 'hsl(var(--background))',
+                        foreground: 'hsl(var(--foreground))',
+                        card: 'hsl(var(--card))',
+                        'card-foreground': 'hsl(var(--card-foreground))',
+                        popover: 'hsl(var(--popover))',
+                        'popover-foreground': 'hsl(var(--popover-foreground))',
+                        primary: 'hsl(var(--primary))',
+                        'primary-foreground': 'hsl(var(--primary-foreground))',
+                        secondary: 'hsl(var(--secondary))',
+                        'secondary-foreground': 'hsl(var(--secondary-foreground))',
+                        muted: 'hsl(var(--muted))',
+                        'muted-foreground': 'hsl(var(--muted-foreground))',
+                        accent: 'hsl(var(--accent))',
+                        'accent-foreground': 'hsl(var(--accent-foreground))',
+                        destructive: 'hsl(var(--destructive))',
+                        'destructive-foreground': 'hsl(var(--destructive-foreground))',
+                        border: 'hsl(var(--border))',
+                        input: 'hsl(var(--input))',
+                        ring: 'hsl(var(--ring))',
+                    },
+                    borderRadius: {
+                        lg: "var(--radius)",
+                        md: "calc(var(--radius) - 2px)",
+                        sm: "calc(var(--radius) - 4px)",
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        :root {
+            --background: 175 60% 8%;
+            --foreground: 90 20% 85%;
+            --card: 176 60% 10%;
+            --card-foreground: 90 20% 85%;
+            --popover: 170 45% 15%;
+            --popover-foreground: 90 20% 85%;
+            --primary: 70 45% 35%;
+            --primary-foreground: 175 60% 8%;
+            --secondary: 165 45% 23%;
+            --secondary-foreground: 90 20% 85%;
+            --muted: 170 45% 15%;
+            --muted-foreground: 90 20% 85%;
+            --accent: 70 45% 35%;
+            --accent-foreground: 175 60% 8%;
+            --destructive: 0 62.8% 30.6%;
+            --destructive-foreground: 0 0% 98%;
+            --border: 170 45% 15%;
+            --input: 176 60% 10%;
+            --ring: 70 45% 35%;
+            --radius: 0.5rem;
+        }
+
+        .gradient-spotlight, .gradient-spotlight-hero, .gradient-spotlight-results {
+            transition: transform 0.3s ease-out;
+        }
+
+        .gradient-spotlight {
+            background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(128, 144, 56, 0.15), transparent 70%);
+        }
+
+        .gradient-spotlight-hero {
+            background: radial-gradient(ellipse 100% 60% at 50% 0%,
+                rgba(128, 144, 56, 0.2),
+                rgba(35, 83, 71, 0.1) 40%,
+                transparent 70%);
+        }
+
+        .gradient-spotlight-results {
+            background: radial-gradient(ellipse 120% 80% at 50% 20%, rgba(35, 83, 71, 0.1), transparent 60%);
+        }
+        
+        /* Animation classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            filter: blur(8px);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+
+        .stagger-child {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .visible .stagger-child {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="font-sans bg-background text-foreground">
+    <div id="app"></div>
+
+    <script type="module">
+        import React, { useState, useRef, useEffect, StrictMode, createElement } from 'https://esm.sh/react@18.2.0';
+        import { createRoot } from 'https://esm.sh/react-dom@18.2.0/client';
+
+        // Utility function to combine class names
+        function cn(...inputs) {
+            return inputs.filter(Boolean).join(' ');
+        }
+        
+        // --- MOCK DATA AND API ---
+        const generateNames = async (formData) => {
+            await new Promise((resolve) => setTimeout(resolve, 1500));
+
+            const nameTemplates = [
+                { prefix: "Innovate", suffix: "Sphere" }, { prefix: "Quantum", suffix: "Leap" },
+                { prefix: "Zenith", suffix: "Flow" }, { prefix: "Apex", suffix: "Dynamics" },
+                { prefix: "Stellar", suffix: "Works" }, { prefix: "Synergy", suffix: "Core" },
+                { prefix: "Momentum", suffix: "Shift" }, { prefix: "Catalyst", suffix: "Labs" },
+                { prefix: "Fusion", suffix: "Point" }, { prefix: "Next", suffix: "Wave" },
+            ];
+
+            const suffixes = ["Hub", "Core", "Flow", "Labs", "Pro", "Max", "AI", "Tech", "Works", "Sphere"];
+            const prefixes = ["Smart", "Quick", "Bright", "Swift", "Pure", "Clear", "Bold", "Prime", "Elite", "Nova"];
+
+            const taglines = [
+                "Pioneering the future of your industry.", "Where innovation meets intuition.",
+                "Crafting tomorrow's solutions, today.", "The intelligent way forward.",
+                "Unlocking potential, together.", "Seamless integration for a complex world.",
+                "Your vision, amplified.", "Engineered for excellence.",
+                "The next generation of solutions.", "Simplicity in every connection.",
+            ];
+
+            return Array.from({ length: 9 }, (_, i) => {
+                let name;
+                const randomChoice = Math.random();
+                
+                if (randomChoice < 0.4 && formData.keywords.length > 0) {
+                    // Use keyword + suffix
+                    const keyword = formData.keywords[Math.floor(Math.random() * formData.keywords.length)];
+                    const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+                    name = `${keyword.charAt(0).toUpperCase() + keyword.slice(1)}${suffix}`;
+                } else if (randomChoice < 0.7) {
+                    // Use prefix + industry word
+                    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                    const industryWord = formData.industry.split(' ')[0] || "Tech";
+                    name = `${prefix}${industryWord.charAt(0).toUpperCase() + industryWord.slice(1)}`;
+                } else {
+                    // Use template combination
+                    const template = nameTemplates[Math.floor(Math.random() * nameTemplates.length)];
+                    name = `${template.prefix}${template.suffix}`;
+                }
+
+                return {
+                    id: `name-${Date.now()}-${i}`,
+                    name: name,
+                    tagline: taglines[Math.floor(Math.random() * taglines.length)],
+                    domains: {
+                        com: Math.random() > 0.4,
+                        io: Math.random() > 0.2,
+                        ai: Math.random() > 0.3,
+                    },
+                };
+            });
+        };
+
+        // --- HOOKS ---
+        const useScrollAnimation = (options = { threshold: 0.1, triggerOnce: true }) => {
+            const ref = useRef(null);
+            const [isVisible, setIsVisible] = useState(false);
+
+            useEffect(() => {
+                const observedElement = ref.current;
+                if (!observedElement) return;
+
+                const observer = new IntersectionObserver(
+                    ([entry]) => {
+                        if (entry.isIntersecting) {
+                            setIsVisible(true);
+                            if (options.triggerOnce) {
+                                observer.unobserve(observedElement);
+                            }
+                        }
+                    },
+                    { threshold: options.threshold ?? 0.1, root: options.root ?? null, rootMargin: options.rootMargin ?? '0px' }
+                );
+
+                observer.observe(observedElement);
+
+                return () => {
+                    if (observedElement) {
+                        observer.unobserve(observedElement);
+                    }
+                };
+            }, [options.threshold, options.triggerOnce, options.root, options.rootMargin]);
+
+            return [ref, isVisible];
+        };
+
+        // Animated counter hook for statistics
+        const useAnimatedCounter = (endValue, duration = 2000, startValue = 0) => {
+            const [count, setCount] = useState(startValue);
+            const [isVisible, setIsVisible] = useState(false);
+            const ref = useRef(null);
+
+            useEffect(() => {
+                const observedElement = ref.current;
+                if (!observedElement) return;
+
+                const observer = new IntersectionObserver(
+                    ([entry]) => {
+                        if (entry.isIntersecting && !isVisible) {
+                            setIsVisible(true);
+                            
+                            const startTime = Date.now();
+                            const animate = () => {
+                                const elapsed = Date.now() - startTime;
+                                const progress = Math.min(elapsed / duration, 1);
+                                
+                                // Easing function for smooth animation
+                                const easedProgress = 1 - Math.pow(1 - progress, 3);
+                                const currentCount = Math.floor(startValue + (endValue - startValue) * easedProgress);
+                                
+                                setCount(currentCount);
+                                
+                                if (progress < 1) {
+                                    requestAnimationFrame(animate);
+                                }
+                            };
+                            
+                            requestAnimationFrame(animate);
+                        }
+                    },
+                    { threshold: 0.3, rootMargin: '-50px 0px' }
+                );
+
+                observer.observe(observedElement);
+
+                return () => {
+                    observer.unobserve(observedElement);
+                };
+            }, [endValue, duration, startValue, isVisible]);
+
+            return [ref, count];
+        };
+        
+        const useParallax = (strength = 0.5) => {
+            const ref = useRef(null);
+            
+            useEffect(() => {
+                const element = ref.current;
+                if (!element) return;
+
+                const handleScroll = () => {
+                    const rect = element.getBoundingClientRect();
+                    const viewportHeight = window.innerHeight;
+                    const elementCenter = rect.top + rect.height / 2;
+                    const distanceToCenter = viewportHeight / 2 - elementCenter;
+                    const offset = distanceToCenter * strength;
+                    element.style.transform = `translateY(${offset}px)`;
+                };
+
+                window.addEventListener('scroll', handleScroll, { passive: true });
+                handleScroll(); // Initial position
+
+                return () => {
+                    window.removeEventListener('scroll', handleScroll);
+                };
+            }, [strength]);
+
+            return ref;
+        };
+
+        // --- UI COMPONENTS ---
+
+        const Icon = ({ name, className = "h-5 w-5" }) => {
+            const icons = {
+                heart: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" })
+                    )
+                ),
+                menu: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('line', { x1: "4", x2: "20", y1: "12", y2: "12" }),
+                        createElement('line', { x1: "4", x2: "20", y1: "6", y2: "6" }),
+                        createElement('line', { x1: "4", x2: "20", y1: "18", y2: "18" })
+                    )
+                ),
+                x: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M18 6 6 18" }),
+                        createElement('path', { d: "m6 6 12 12" })
+                    )
+                ),
+                 sparkles: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "m12 3-1.9 5.8-5.8 1.9 5.8 1.9L12 18l1.9-5.8 5.8-1.9-5.8-1.9Z" })
+                    )
+                ),
+                copy: (
+                     createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('rect', { width: "14", height: "14", x: "8", y: "8", rx: "2", ry: "2" }),
+                        createElement('path', { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" })
+                    )
+                ),
+                 externalLink: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M15 3h6v6" }),
+                        createElement('path', { d: "M10 14 21 3" }),
+                        createElement('path', { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" })
+                    )
+                ),
+                refreshCw: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" }),
+                        createElement('path', { d: "M21 3v5h-5" }),
+                        createElement('path', { d: "M3 21c-1.66 0-3-1.34-3-3s1.34-3 3-3h18v3c0 1.66-1.34 3-3 3h-1.76" }),
+                        createElement('path', { d: "m3 15-3 3 3 3" })
+                    )
+                ),
+                check: (
+                     createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M20 6 9 17l-5-5" })
+                    )
+                ),
+                plus: (
+                     createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M5 12h14" }),
+                        createElement('path', { d: "M12 5v14" })
+                    )
+                ),
+                wand2: (
+                     createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z" }),
+                        createElement('path', { d: "m14 7 3 3" }),
+                        createElement('path', { d: "M5 6v4" }),
+                        createElement('path', { d: "M19 14v4" }),
+                        createElement('path', { d: "M10 2v2" }),
+                        createElement('path', { d: "M7 8H3" }),
+                        createElement('path', { d: "M21 16h-4" }),
+                        createElement('path', { d: "M11 3H9" })
+                    )
+                ),
+                 zap: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('polygon', { points: "13 2 3 14 12 14 11 22 21 10 12 10 13 2" })
+                    )
+                ),
+                shield: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" })
+                    )
+                ),
+                camera: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" }),
+                        createElement('circle', { cx: "12", cy: "13", r: "3" })
+                    )
+                ),
+                globe: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('circle', { cx: "12", cy: "12", r: "10" }),
+                        createElement('line', { x1: "2", x2: "22", y1: "12", y2: "12" }),
+                        createElement('path', { d: "M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" })
+                    )
+                ),
+                 github: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" }),
+                        createElement('path', { d: "M9 18c-4.51 2-5-2-7-2" })
+                    )
+                ),
+                twitter: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M22 4s-.7 2.1-2 3.4c1.6 1.4 2.8 3.2 3 5.2-9.7 1.2-12.7-3.2-12.7-3.2s-1.2-2-2.8-2.4c-1.1-.3-2.2.3-2.2.3s-1-1.2-3.2-1.2c-1.3-.1-2.2.3-2.2.3s.5 2.1 3 3.8c-1.5 1-2.5 2.5-3 4.2-6.5-1-10.5-5-10.5-5s3 5.5 9.5 8c-1.5 1-3 1.5-4.5 1.5-1 0-2-.3-2.8-.8 2.5 1.8 5.5 2.8 9 2.8 9.5 0 14.5-7.5 14.5-14.5v-.5c.8-1 1.5-2 2-3.3z" })
+                    )
+                ),
+                linkedin: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" }),
+                        createElement('rect', { width: "4", height: "12", x: "2", y: "9" }),
+                        createElement('circle', { cx: "4", cy: "4", r: "2" })
+                    )
+                ),
+                mail: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('rect', { width: "20", height: "16", x: "2", y: "4", rx: "2" }),
+                        createElement('path', { d: "m22 7-10 5L2 7" })
+                    )
+                ),
+                phone: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" })
+                    )
+                ),
+                mapPin: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" }),
+                        createElement('circle', { cx: "12", cy: "10", r: "3" })
+                    )
+                ),
+                instagram: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('rect', { width: "20", height: "20", x: "2", y: "2", rx: "5", ry: "5" }),
+                        createElement('path', { d: "m16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" }),
+                        createElement('line', { x1: "17.5", x2: "17.51", y1: "6.5", y2: "6.5" })
+                    )
+                ),
+                facebook: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" })
+                    )
+                ),
+                youtube: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" }),
+                        createElement('path', { d: "m10 15 5-3-5-3z" })
+                    )
+                ),
+                send: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "m22 2-7 20-4-9-9-4Z" }),
+                        createElement('path', { d: "M22 2 11 13" })
+                    )
+                ),
+                // Technology Icons
+                javascript: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "currentColor", className: className },
+                        createElement('rect', { x: "2", y: "2", width: "20", height: "20", rx: "2", fill: "#F7DF1E" }),
+                        createElement('path', { d: "M12.5 12.5c0-1.5.5-2 1.5-2s1.5.5 1.5 2v4c0 1.5-.5 2-1.5 2s-1.5-.5-1.5-2v-4zm-4 1c0-1.5.5-2 1.5-2s1.5.5 1.5 2v3c0 1.5-.5 2-1.5 2s-1.5-.5-1.5-2v-3z", fill: "#000" })
+                    )
+                ),
+                html5: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "currentColor", className: className },
+                        createElement('path', { d: "M3.3 2l1.7 19 7 2 7-2 1.7-19H3.3zm14.5 6.4H9.4l.2 2.3h8l-.6 6.5-4 1.1-4-1.1-.3-3.2h2l.1 1.6 2.2.6 2.2-.6.2-2.4H7.6l-.5-6.9h9.8l-.1 2.1z", fill: "#E34F26" })
+                    )
+                ),
+                python: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "currentColor", className: className },
+                        createElement('path', { d: "M12 2C9.2 2 7 4.2 7 7v3H5c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-3h2v3c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2h-2V7c0-2.8-2.2-5-5-5zm0 2c1.7 0 3 1.3 3 3v3h-6V7c0-1.7 1.3-3 3-3z", fill: "#3776AB" })
+                    )
+                ),
+                css3: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "currentColor", className: className },
+                        createElement('path', { d: "M3.3 2l1.7 19 7 2 7-2 1.7-19H3.3zm14 6.4h-6.8l.3 3.1h6.2l-.6 6.5-4 1.1-4-1.1-.3-3.2h2l.1 1.6 2.2.6 2.2-.6.3-3.1H7.1l-.8-8.9h11.4l-.4 3z", fill: "#1572B6" })
+                    )
+                ),
+                lightbulb: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" }),
+                        createElement('path', { d: "M9 18h6" }),
+                        createElement('path', { d: "M10 22h4" })
+                    )
+                ),
+                arrowUp: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('path', { d: "m18 15-6-6-6 6" })
+                    )
+                ),
+                clock: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('circle', { cx: "12", cy: "12", r: "10" }),
+                        createElement('polyline', { points: "12,6 12,12 16,14" })
+                    )
+                ),
+                star: (
+                    createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", className: className },
+                        createElement('polygon', { points: "12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" })
+                    )
+                )
+            };
+            return icons[name] || null;
+        };
+
+        const Button = ({ children, variant = 'default', size = 'default', className, ...props }) => {
+            const baseClasses = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
+            const variants = {
+                default: "bg-primary text-primary-foreground hover:bg-primary/90",
+                destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+                outline: "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
+                secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+                ghost: "hover:bg-accent hover:text-accent-foreground",
+                link: "underline-offset-4 hover:underline text-primary",
+            };
+            const sizes = {
+                default: "h-10 py-2 px-4",
+                sm: "h-9 px-3 rounded-md",
+                lg: "h-11 px-8 rounded-md",
+                icon: "h-10 w-10",
+            };
+
+            return React.createElement('button', {
+                className: cn(baseClasses, variants[variant], sizes[size], className),
+                ...props
+            }, children);
+        };
+        
+        // --- APP COMPONENTS ---
+
+        function Header({ onShowFavorites, favoritesCount }) {
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+            const [ref, isVisible] = useScrollAnimation({ threshold: 0.1 });
+
+            return createElement('header', { ref: ref, className: cn("sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 reveal", isVisible && "visible") },
+                createElement('div', { className: "container mx-auto px-4 sm:px-6 lg:px-8" },
+                    createElement('div', { className: "flex h-16 items-center justify-between" },
+                        createElement('div', { className: "flex items-center space-x-2" },
+                            createElement('div', { className: "h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center relative shadow-lg" },
+                                createElement('div', { className: "absolute inset-0.5 bg-white/10 rounded-lg backdrop-blur-sm" }),
+                                createElement('svg', { className: "h-6 w-6 text-white relative z-10", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2" },
+                                    createElement('path', { d: "M9.5 2A2.5 2.5 0 0 1 12 4.5A2.5 2.5 0 0 1 14.5 2H21a1 1 0 0 1 1 1v6.5a2.5 2.5 0 0 1-2.5 2.5A2.5 2.5 0 0 1 17 14.5V21a1 1 0 0 1-1 1H9.5A2.5 2.5 0 0 1 7 19.5A2.5 2.5 0 0 1 4.5 22H3a1 1 0 0 1-1-1v-6.5A2.5 2.5 0 0 1 4.5 12A2.5 2.5 0 0 1 7 9.5V3a1 1 0 0 1 1-1h1.5z" }),
+                                    createElement('circle', { cx: "12", cy: "12", r: "2", fill: "currentColor" }),
+                                    createElement('path', { d: "M8 8l2 2M16 8l-2 2M8 16l2-2M16 16l-2-2", strokeWidth: "1.5" })
+                                )
+                            ),
+                            createElement('span', { className: "font-playfair font-bold text-xl text-foreground" }, 'Brandify')
+                        ),
+                        createElement('nav', { className: "hidden md:flex items-center space-x-8" },
+                            createElement('a', { href: "#home", className: "text-sm font-medium text-muted-foreground transition-colors hover:text-primary" }, "Home"),
+                            createElement('button', { onClick: onShowFavorites, className: "text-sm font-medium text-muted-foreground transition-colors hover:text-primary flex items-center gap-1" }, 
+                                createElement(Icon, { name: 'heart' }),
+                                "Favorites",
+                                favoritesCount > 0 && createElement('span', {className: "ml-1 text-xs bg-primary text-primary-foreground rounded-full px-2 py-0.5"}, favoritesCount)
+                            ),
+                             createElement('a', { href: "#about", className: "text-sm font-medium text-muted-foreground transition-colors hover:text-primary" }, "About"),
+                             createElement('a', { href: "#contact", className: "text-sm font-medium text-muted-foreground transition-colors hover:text-primary" }, "Get In Touch")
+                        ),
+                        createElement(Button, { variant: "ghost", size: "icon", className: "md:hidden", onClick: () => setIsMobileMenuOpen(!isMobileMenuOpen) },
+                            createElement(Icon, { name: isMobileMenuOpen ? 'x' : 'menu' })
+                        )
+                    ),
+                     isMobileMenuOpen && createElement('div', { className: "md:hidden border-t border-border/40" },
+                        createElement('nav', { className: "flex flex-col space-y-4 px-4 py-6 bg-card/30 backdrop-blur-sm" },
+                             createElement('a', { href: "#home", className: "text-sm font-medium text-muted-foreground transition-colors hover:text-primary py-2 px-3 rounded-lg hover:bg-accent/10" }, "Home"),
+                             createElement('button', { onClick: onShowFavorites, className: "text-sm font-medium text-muted-foreground transition-colors hover:text-primary flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-accent/10" }, 
+                                createElement(Icon, { name: 'heart' }),
+                                "Favorites",
+                                favoritesCount > 0 && createElement('span', {className: "ml-1 text-xs bg-primary text-primary-foreground rounded-full px-2 py-0.5"}, favoritesCount)
+                            ),
+                            createElement('a', { href: "#about", className: "text-sm font-medium text-muted-foreground transition-colors hover:text-primary py-2 px-3 rounded-lg hover:bg-accent/10" }, "About"),
+                            createElement('a', { href: "#contact", className: "text-sm font-medium text-muted-foreground transition-colors hover:text-primary py-2 px-3 rounded-lg hover:bg-accent/10" }, "Get In Touch")
+                        )
+                    )
+                )
+            );
+        }
+
+        function HeroSection({ onScrollToForm }) {
+            const [ref, isVisible] = useScrollAnimation({ threshold: 0.3 });
+            const parallaxRef = useParallax(0.1);
+            
+            return createElement('section', { ref: ref, id: 'home', className: "relative min-h-screen flex items-center justify-center overflow-hidden" },
+                 createElement('div', { ref: parallaxRef, className: cn("container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-20 reveal", isVisible && "visible") },
+                    createElement('h1', { className: "font-playfair font-bold text-4xl sm:text-6xl lg:text-7xl text-balance mb-6 bg-gradient-to-r from-white via-primary to-accent bg-clip-text text-transparent" }, "Find the perfect name for your startup in seconds"),
+                    createElement('p', { className: "text-lg sm:text-xl text-muted-foreground text-pretty mb-8 max-w-3xl mx-auto" }, "Powered by AI, our free name generator creates memorable, brandable names for your startup or product in any industry."),
+                    createElement(Button, { size: "lg", onClick: onScrollToForm, className: "text-lg group relative overflow-hidden" }, 
+                        createElement('span', {className: "absolute inset-0 w-full h-full bg-gradient-to-r from-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300"}),
+                         createElement('span', {className: "relative flex items-center z-10"},
+                            createElement(Icon, { name: 'sparkles', className: "mr-2 h-5 w-5" }),
+                            "Generate Names Now"
+                        )
+                    )
+                )
+            );
+        }
+
+        function NameGeneratorForm({ onGenerate, isGenerating }) {
+            const [ref, isVisible] = useScrollAnimation({ threshold: 0.2 });
+            const [formData, setFormData] = useState({ industry: "", keywords: [], tone: "modern", length: "medium" });
+            const [keywordInput, setKeywordInput] = useState("");
+
+            const addKeyword = () => {
+                if (keywordInput.trim() && !formData.keywords.includes(keywordInput.trim())) {
+                    setFormData(prev => ({ ...prev, keywords: [...prev.keywords, keywordInput.trim()] }));
+                    setKeywordInput("");
+                }
+            };
+
+            const removeKeyword = (keywordToRemove) => {
+                setFormData(prev => ({ ...prev, keywords: prev.keywords.filter(k => k !== keywordToRemove) }));
+            };
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (formData.industry.trim()) onGenerate(formData);
+            };
+
+            return createElement('section', { ref: ref, className: cn("relative py-20 overflow-hidden reveal", isVisible && "visible") },
+                createElement('div', { className: "absolute inset-0 gradient-spotlight" }),
+                createElement('div', { className: "container mx-auto px-4 sm:px-6 lg:px-8 relative z-10" },
+                    createElement('div', { className: "max-w-2xl mx-auto" },
+                        createElement('div', { className: "text-center mb-12" },
+                            createElement('h2', { className: "font-playfair font-bold text-3xl sm:text-5xl text-balance mb-4" }, "Generate Your Perfect Name"),
+                            createElement('p', { className: "text-lg text-muted-foreground text-pretty" }, "Tell us about your business and we'll create unique, memorable names tailored to your vision.")
+                        ),
+                        createElement('div', { className: "bg-card border border-border rounded-xl p-8 shadow-lg" },
+                            createElement('form', { onSubmit: handleSubmit, className: "space-y-6" },
+                                createElement('div', {},
+                                    createElement('label', { htmlFor: "industry", className: "text-sm font-medium" }, "Industry or Niche *"),
+                                    createElement('input', { id: "industry", value: formData.industry, onChange: e => setFormData(p => ({ ...p, industry: e.target.value })), placeholder: "e.g., SaaS, E-commerce, Healthcare", className: "mt-2 w-full bg-input border-border border rounded-md px-3 py-2 text-sm", required: true })
+                                ),
+                                createElement('div', {},
+                                    createElement('label', { htmlFor: "keywords", className: "text-sm font-medium" }, "Keywords (Optional)"),
+                                     createElement('div', { className: "mt-2 flex space-x-2" },
+                                        createElement('input', { id: "keywords", value: keywordInput, onChange: e => setKeywordInput(e.target.value), onKeyPress: e => e.key === 'Enter' && (e.preventDefault(), addKeyword()), placeholder: "Add relevant keywords", className: "flex-grow bg-input border-border border rounded-md px-3 py-2 text-sm" }),
+                                        createElement(Button, { type: "button", variant: "outline", size: "icon", onClick: addKeyword, disabled: !keywordInput.trim() }, createElement(Icon, { name: 'plus', className: "h-4 w-4" }))
+                                    ),
+                                    formData.keywords.length > 0 && createElement('div', { className: "flex flex-wrap gap-2 mt-2" },
+                                        ...formData.keywords.map(keyword =>
+                                            createElement('span', { key: keyword, className: "flex items-center gap-1 bg-secondary text-secondary-foreground text-xs font-medium px-2.5 py-1 rounded-full" },
+                                                keyword,
+                                                createElement('button', { type: "button", onClick: () => removeKeyword(keyword) }, createElement(Icon, { name: 'x', className: "h-3 w-3" }))
+                                            )
+                                        )
+                                    )
+                                ),
+                                 createElement('div', { className: "grid grid-cols-1 sm:grid-cols-2 gap-6" },
+                                     createElement('div', {},
+                                        createElement('label', { htmlFor: "tone", className: "text-sm font-medium" }, "Tone & Style"),
+                                        createElement('select', { id: "tone", value: formData.tone, onChange: e => setFormData(p => ({ ...p, tone: e.target.value })), className: "mt-2 w-full bg-input border-border border rounded-md px-3 py-2 text-sm appearance-none" },
+                                            createElement('option', { value: "modern" }, "Modern"),
+                                            createElement('option', { value: "fun" }, "Fun & Playful"),
+                                            createElement('option', { value: "luxury" }, "Luxury"),
+                                            createElement('option', { value: "techy" }, "Tech-Forward")
+                                        )
+                                    ),
+                                     createElement('div', {},
+                                        createElement('label', { htmlFor: "length", className: "text-sm font-medium" }, "Name Length"),
+                                        createElement('select', { id: "length", value: formData.length, onChange: e => setFormData(p => ({ ...p, length: e.target.value })), className: "mt-2 w-full bg-input border-border border rounded-md px-3 py-2 text-sm appearance-none" },
+                                            createElement('option', { value: "short" }, "Short (4-6 letters)"),
+                                            createElement('option', { value: "medium" }, "Medium (7-10 letters)"),
+                                            createElement('option', { value: "long" }, "Long (11+ letters)")
+                                        )
+                                    )
+                                ),
+                                createElement(Button, { type: "submit", size: "lg", disabled: isGenerating, className: "w-full text-lg" },
+                                    isGenerating ?
+                                    createElement(React.Fragment, null, 
+                                        createElement(Icon, { name: 'wand2', className: "mr-2 h-5 w-5 animate-spin" }),
+                                        "Generating..."
+                                    ) :
+                                    createElement(React.Fragment, null, 
+                                        createElement(Icon, { name: 'wand2', className: "mr-2 h-5 w-5" }),
+                                        "Generate Names"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        }
+
+        function ResultsSection({ names, favorites, onToggleFavorite, onGenerateMore, isGenerating }) {
+            const [ref, isVisible] = useScrollAnimation({ threshold: 0.1 });
+            const [copiedId, setCopiedId] = useState(null);
+
+            const copyToClipboard = (text, id) => {
+                navigator.clipboard.writeText(text).then(() => {
+                    setCopiedId(id);
+                    setTimeout(() => setCopiedId(null), 2000);
+                });
+            };
+
+            return createElement('section', { id: 'results', className: "relative py-20 overflow-hidden" },
+                createElement('div', { className: "absolute inset-0 gradient-spotlight-results" }),
+                 createElement('div', { ref: ref, className: cn("container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 reveal", isVisible && "visible") },
+                    names.length > 0 ? (
+                        createElement(React.Fragment, null,
+                            createElement('div', { className: "text-center mb-12" },
+                                createElement('h2', { className: "font-playfair font-bold text-3xl sm:text-5xl text-balance mb-4" }, "Your Generated Names"),
+                                createElement('p', { className: "text-lg text-muted-foreground text-pretty" }, "Here are some creative names. Click the heart to save your favorites!")
+                            ),
+                            createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12" },
+                                ...names.map((nameData, index) =>
+                                    createElement('div', { 
+                                        key: nameData.id, 
+                                        className: "stagger-child bg-card/50 backdrop-blur border border-border/50 rounded-xl p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(var(--primary-rgb),0.2)]",
+                                        style: { transitionDelay: `${index * 100}ms` }
+                                    },
+                                        createElement('div', { className: "flex items-start justify-between mb-4" },
+                                            createElement('div', { className: 'flex-1' },
+                                                createElement('h3', { className: "font-playfair font-bold text-xl sm:text-2xl text-card-foreground mb-2 text-balance" }, nameData.name),
+                                                createElement('p', { className: "text-sm text-muted-foreground text-pretty" }, nameData.tagline)
+                                            ),
+                                            createElement(Button, { variant: "ghost", size: "icon", onClick: () => onToggleFavorite(nameData.id), className: "group relative" },
+                                                createElement('span', { className: "absolute inset-0 rounded-full group-hover:bg-red-500/10 transition-colors" }),
+                                                createElement(Icon, { name: 'heart', className: cn("h-5 w-5 relative z-10 transition-colors group-hover:text-red-500", favorites.includes(nameData.id) ? "fill-red-500 text-red-500" : "text-muted-foreground hover:text-red-500") })
+                                            )
+                                        ),
+                                        createElement('div', { className: 'space-y-4' },
+                                            createElement('div', {}, 
+                                                createElement('p', {className: "text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2"}, "Domain Availability"),
+                                                createElement('div', {className: 'flex flex-wrap gap-2'},
+                                                    ...Object.entries(nameData.domains).map(([ext, available]) => 
+                                                        createElement('a', {
+                                                            key: ext, 
+                                                            href: `https://www.namecheap.com/domains/registration/results/?domain=${nameData.name.toLowerCase().replace(/\s+/g, "")}.${ext}`,
+                                                            target: "_blank",
+                                                            rel: "noopener noreferrer"
+                                                        },
+                                                            createElement('span', {className: cn("text-xs px-2 py-1 rounded", available ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground')}, `.${ext} ${available ? '✓' : '✗'}`, createElement(Icon, {name: 'externalLink', className: 'inline ml-1 h-3 w-3'}))
+                                                        )
+                                                    )
+                                                )
+                                            ),
+                                            createElement(Button, { variant: "outline", size: "sm", className: "w-full", onClick: () => copyToClipboard(nameData.name, nameData.id) },
+                                                copiedId === nameData.id ? 
+                                                createElement(React.Fragment, null, createElement(Icon, { name: 'check', className: "mr-2 h-4 w-4" }), "Copied!") :
+                                                createElement(React.Fragment, null, createElement(Icon, { name: 'copy', className: "mr-2 h-4 w-4" }), "Copy Name")
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                            createElement('div', {className: 'text-center'},
+                                createElement(Button, { onClick: onGenerateMore, disabled: isGenerating, size: "lg", variant: "outline" },
+                                    isGenerating ?
+                                    createElement(React.Fragment, null, 
+                                        createElement(Icon, { name: 'refreshCw', className: "mr-2 h-5 w-5 animate-spin" }),
+                                        "Generating More..."
+                                    ) :
+                                    createElement(React.Fragment, null, 
+                                        createElement(Icon, { name: 'refreshCw', className: "mr-2 h-5 w-5" }),
+                                        "Generate More Names"
+                                    )
+                                )
+                            )
+                        )
+                    ) : (
+                        createElement('div', { className: "flex flex-col items-center justify-center py-20 px-6" },
+                            // Icon Container
+                            createElement('div', { className: "relative mb-8" },
+                                createElement('div', { className: "w-24 h-24 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center border border-border/50 backdrop-blur" },
+                                    createElement(Icon, { name: 'lightbulb', className: "h-12 w-12 text-primary/70" })
+                                ),
+                                // Animated pulse rings
+                                createElement('div', { className: "absolute inset-0 rounded-full border border-primary/30 animate-ping" }),
+                                createElement('div', { className: "absolute inset-2 rounded-full border border-accent/30 animate-ping", style: { animationDelay: '0.5s' } })
+                            ),
+                            
+                            // Main Content
+                            createElement('div', { className: "text-center max-w-md" },
+                                createElement('h3', { className: "font-playfair font-bold text-2xl sm:text-3xl text-card-foreground mb-4" }, "Ready to Create?"),
+                                createElement('p', { className: "text-muted-foreground text-lg mb-6 leading-relaxed" }, "Fill out the form above to generate unique, creative names for your startup or product. Let AI help you discover the perfect brand identity!"),
+                                
+                                // Feature highlights
+                                createElement('div', { className: "flex flex-wrap justify-center gap-4 mb-8" },
+                                    createElement('div', { className: "flex items-center gap-2 bg-card/30 backdrop-blur border border-border/50 rounded-full px-4 py-2" },
+                                        createElement(Icon, { name: 'zap', className: "h-4 w-4 text-accent" }),
+                                        createElement('span', { className: "text-sm font-medium" }, "AI-Powered")
+                                    ),
+                                    createElement('div', { className: "flex items-center gap-2 bg-card/30 backdrop-blur border border-border/50 rounded-full px-4 py-2" },
+                                        createElement(Icon, { name: 'clock', className: "h-4 w-4 text-primary" }),
+                                        createElement('span', { className: "text-sm font-medium" }, "Instant Results")
+                                    ),
+                                    createElement('div', { className: "flex items-center gap-2 bg-card/30 backdrop-blur border border-border/50 rounded-full px-4 py-2" },
+                                        createElement(Icon, { name: 'star', className: "h-4 w-4 text-accent" }),
+                                        createElement('span', { className: "text-sm font-medium" }, "Creative Names")
+                                    )
+                                ),
+                                
+                                // Call to action
+                                createElement('div', { className: "flex items-center justify-center gap-2 text-sm text-muted-foreground" },
+                                    createElement(Icon, { name: 'arrowUp', className: "h-4 w-4 animate-bounce" }),
+                                    createElement('span', {}, "Scroll up to get started")
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        }
+
+        function AboutSection() {
+            const [ref, isVisible] = useScrollAnimation({ threshold: 0.2 });
+            const [countriesRef, countriesCount] = useAnimatedCounter(21, 2000);
+            const [contributorsRef, contributorsCount] = useAnimatedCounter(500, 2500);
+            const [downloadsRef, downloadsCount] = useAnimatedCounter(500000, 3000);
+
+            return createElement('section', { ref: ref, id: 'about', className: cn("relative py-20 overflow-hidden reveal", isVisible && "visible") },
+                createElement('div', { className: "absolute inset-0 gradient-spotlight" }),
+                createElement('div', { className: "container mx-auto px-4 sm:px-6 lg:px-8 relative z-10" },
+                    // Header
+                    createElement('div', { className: "text-center mb-16" },
+                        createElement('h2', { className: "font-playfair font-bold text-4xl sm:text-5xl text-balance mb-6" }, "About Brandify"),
+                        createElement('p', { className: "text-lg text-muted-foreground text-pretty max-w-2xl mx-auto" }, "We're passionate developers dedicated to creating the world's most innovative naming solutions and sharing them with fellow entrepreneurs.")
+                    ),
+                    
+                    // Mission and Stats Section
+                    createElement('div', { className: "grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16" },
+                        // Mission Section
+                        createElement('div', { className: "space-y-8" },
+                            createElement('div', {},
+                                createElement('h3', { className: "font-playfair font-bold text-2xl mb-4" }, "Our Mission"),
+                                createElement('p', { className: "text-muted-foreground leading-relaxed mb-6" }, "At Brandify, we believe that naming has the power to inspire, connect, and transform. Our mission is to curate and showcase exceptional name generation that tells stories, captures emotions, and celebrates the beauty of our work."),
+                                createElement('p', { className: "text-muted-foreground leading-relaxed" }, "From breathtaking business names to innovative brand concepts, we carefully select each suggestion to ensure it meets our high standards for creativity, excellence and emotional impact.")
+                            ),
+                            
+                            // Feature Cards
+                            createElement('div', { className: "grid grid-cols-1 sm:grid-cols-2 gap-6" },
+                                createElement('div', { className: "bg-card/50 backdrop-blur border border-border rounded-xl p-6 hover:border-primary/50 transition-all duration-300" },
+                                    createElement('div', { className: "w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center mb-4" },
+                                        createElement(Icon, { name: 'camera', className: "h-6 w-6 text-primary-foreground" })
+                                    ),
+                                    createElement('h4', { className: "font-semibold mb-2" }, "Professional Quality"),
+                                    createElement('p', { className: "text-muted-foreground text-sm" }, "High-resolution names from expert generators")
+                                ),
+                                createElement('div', { className: "bg-card/50 backdrop-blur border border-border rounded-xl p-6 hover:border-accent/50 transition-all duration-300" },
+                                    createElement('div', { className: "w-12 h-12 bg-gradient-to-br from-accent to-primary rounded-xl flex items-center justify-center mb-4" },
+                                        createElement(Icon, { name: 'heart', className: "h-6 w-6 text-accent-foreground" })
+                                    ),
+                                    createElement('h4', { className: "font-semibold mb-2" }, "Curated Collection"),
+                                    createElement('p', { className: "text-muted-foreground text-sm" }, "Hand-picked names that tell compelling stories")
+                                )
+                            )
+                        ),
+                        
+                        // Global Community Stats
+                        createElement('div', { className: "bg-gradient-to-br from-primary to-accent rounded-2xl p-8 text-primary-foreground" },
+                            createElement('div', { className: "text-center mb-8" },
+                                createElement('div', { className: "w-16 h-16 bg-primary-foreground/20 rounded-full flex items-center justify-center mx-auto mb-4" },
+                                    createElement(Icon, { name: 'globe', className: "h-8 w-8 text-primary-foreground" })
+                                ),
+                                createElement('h3', { className: "font-bold text-2xl mb-2" }, "Global Community"),
+                                createElement('p', { className: "text-primary-foreground/90" }, "Join thousands of naming enthusiasts from around the world who share our passion for creative storytelling.")
+                            ),
+                            
+                            createElement('div', { className: "grid grid-cols-3 gap-4 text-center" },
+                                createElement('div', { ref: countriesRef },
+                                    createElement('div', { className: "text-3xl font-bold mb-1" }, `${countriesCount}+`),
+                                    createElement('div', { className: "text-primary-foreground/80 text-sm" }, "Countries")
+                                ),
+                                createElement('div', { ref: contributorsRef },
+                                    createElement('div', { className: "text-3xl font-bold mb-1" }, `${contributorsCount.toLocaleString()}+`),
+                                    createElement('div', { className: "text-primary-foreground/80 text-sm" }, "Contributors")
+                                ),
+                                createElement('div', { ref: downloadsRef },
+                                    createElement('div', { className: "text-3xl font-bold mb-1" }, `${Math.floor(downloadsCount / 1000)}K+`),
+                                    createElement('div', { className: "text-primary-foreground/80 text-sm" }, "Names Generated")
+                                )
+                            )
+                        )
+                    ),
+                    
+                    // Developer Profile Section
+                    createElement('div', { className: "text-center" },
+                        createElement('h3', { className: "font-playfair font-bold text-3xl mb-8" }, "Meet Our Developer"),
+                        createElement('div', { className: "max-w-2xl mx-auto bg-card/50 backdrop-blur border border-border rounded-2xl p-8" },
+                            createElement('div', { className: "flex flex-col items-center" },
+                                createElement('div', { className: "w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center mb-6" },
+                                    createElement('span', { className: "text-primary-foreground text-2xl font-bold" }, "</>")
+                                ),
+                                createElement('h4', { className: "font-bold text-xl mb-2" }, "Ilesh Patel"),
+                                createElement('p', { className: "text-primary font-medium mb-4" }, "Full-Stack Developer & Data Analyst"),
+                                createElement('p', { className: "text-muted-foreground text-sm text-center leading-relaxed mb-6" }, "Passionate developer with expertise in modern web technologies, creating beautiful and functional digital experiences. Specializes in responsive design, performance optimization, and user-centered development."),
+                                
+                                // Skills badges
+                                createElement('div', { className: "flex flex-wrap gap-2 mb-6 justify-center" },
+                                    createElement('span', { className: "text-xs bg-secondary text-secondary-foreground px-3 py-1 rounded-full" }, "🔧 Frontend & Backend"),
+                                    createElement('span', { className: "text-xs bg-secondary text-secondary-foreground px-3 py-1 rounded-full" }, "📱 Responsive Design"),
+                                    createElement('span', { className: "text-xs bg-secondary text-secondary-foreground px-3 py-1 rounded-full" }, "⚡ Performance")
+                                ),
+                                
+                                // Technical Skills
+                                createElement('div', {},
+                                    createElement('h5', { className: "font-semibold mb-3" }, "Technical Skills"),
+                                    createElement('div', { className: "grid grid-cols-4 gap-3" },
+                                        createElement('div', { className: "bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-3 text-center hover:bg-yellow-500/30 transition-colors" },
+                                            createElement(Icon, { name: 'javascript', className: "w-6 h-6 mx-auto mb-1" }),
+                                            createElement('div', { className: "text-yellow-600 font-bold text-sm" }, "JavaScript")
+                                        ),
+                                        createElement('div', { className: "bg-orange-500/20 border border-orange-500/30 rounded-lg p-3 text-center hover:bg-orange-500/30 transition-colors" },
+                                            createElement(Icon, { name: 'html5', className: "w-6 h-6 mx-auto mb-1" }),
+                                            createElement('div', { className: "text-orange-600 font-bold text-sm" }, "HTML5")
+                                        ),
+                                        createElement('div', { className: "bg-blue-500/20 border border-blue-500/30 rounded-lg p-3 text-center hover:bg-blue-500/30 transition-colors" },
+                                            createElement(Icon, { name: 'python', className: "w-6 h-6 mx-auto mb-1" }),
+                                            createElement('div', { className: "text-blue-600 font-bold text-sm" }, "Python")
+                                        ),
+                                        createElement('div', { className: "bg-blue-600/20 border border-blue-600/30 rounded-lg p-3 text-center hover:bg-blue-600/30 transition-colors" },
+                                            createElement(Icon, { name: 'css3', className: "w-6 h-6 mx-auto mb-1" }),
+                                            createElement('div', { className: "text-blue-700 font-bold text-sm" }, "CSS3")
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        }
+
+        function GetInTouchSection() {
+            const [ref, isVisible] = useScrollAnimation({ threshold: 0.2 });
+            const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+            
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                console.log('Form submitted:', formData);
+                // Handle form submission here
+                alert('Thank you for your message! We\'ll get back to you soon.');
+                setFormData({ name: "", email: "", subject: "", message: "" });
+            };
+
+            const contactInfo = [
+                {
+                    icon: 'mail',
+                    title: 'Email',
+                    value: 'ileshpatel666@gmail.com',
+                    subtitle: 'We\'ll respond within 24 hours',
+                    color: 'from-orange-500 to-red-500'
+                },
+                {
+                    icon: 'phone',
+                    title: 'Phone',
+                    value: '+91 77790 56708',
+                    subtitle: 'Mon-Fri, 9AM-6PM IST',
+                    color: 'from-blue-500 to-blue-600'
+                },
+                {
+                    icon: 'mapPin',
+                    title: 'Location',
+                    value: 'Surat, Gujarat',
+                    subtitle: 'India',
+                    color: 'from-green-500 to-green-600'
+                }
+            ];
+
+            const socialLinks = [
+                { icon: 'instagram', href: "https://www.instagram.com/ilesh.009", label: "Instagram", color: 'bg-pink-500 hover:bg-pink-600' },
+                { icon: 'twitter', href: "https://x.com/Ilesh_009", label: "Twitter", color: 'bg-blue-500 hover:bg-blue-600' },
+                { icon: 'facebook', href: "https://www.facebook.com/share/1Akw57qagC/", label: "Facebook", color: 'bg-blue-600 hover:bg-blue-700' },
+                { icon: 'youtube', href: "https://www.youtube.com/@ileshpatel666", label: "YouTube", color: 'bg-red-500 hover:bg-red-600' },
+                { icon: 'github', href: "https://github.com/IleshDevX", label: "GitHub", color: 'bg-gray-800 hover:bg-gray-900' },
+            ];
+
+            const faqItems = [
+                {
+                    question: "Are downloads free?",
+                    answer: "Yes! All names are free for personal use."
+                },
+                {
+                    question: "Can I use names commercially?",
+                    answer: "Please contact us for commercial licensing."
+                }
+            ];
+
+            return createElement('section', { ref: ref, id: 'contact', className: cn("relative py-12 overflow-hidden reveal", isVisible && "visible") },
+                createElement('div', { className: "absolute inset-0 gradient-spotlight" }),
+                createElement('div', { className: "container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 max-w-5xl" },
+                    // Header
+                    createElement('div', { className: "text-center mb-9" },
+                        createElement('h2', { className: "font-playfair font-bold text-2xl sm:text-3xl text-balance mb-3" }, "Get In Touch"),
+                        createElement('p', { className: "text-sm text-muted-foreground text-pretty max-w-xl mx-auto" }, "Have questions, feedback, or want to collaborate? We'd love to hear from you.")
+                    ),
+                    
+                    // Main Content Grid
+                    createElement('div', { className: "grid grid-cols-1 lg:grid-cols-2 gap-6" },
+                        // Contact Form
+                        createElement('div', { className: "bg-card/50 backdrop-blur border border-border rounded-xl p-4" },
+                            createElement('h3', { className: "font-bold text-lg mb-4" }, "Send us a Message"),
+                            createElement('form', { onSubmit: handleSubmit, className: "space-y-4" },
+                                // Name and Email Row
+                                createElement('div', { className: "grid grid-cols-1 sm:grid-cols-2 gap-3" },
+                                    createElement('div', {},
+                                        createElement('label', { htmlFor: "contact-name", className: "text-sm font-medium mb-2 block" }, "Name *"),
+                                        createElement('input', { 
+                                            id: "contact-name", 
+                                            value: formData.name, 
+                                            onChange: e => setFormData(p => ({ ...p, name: e.target.value })), 
+                                            placeholder: "Your full name", 
+                                            className: "w-full bg-input/80 backdrop-blur border-border border rounded-md px-2.5 py-2 text-sm transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20", 
+                                            required: true 
+                                        })
+                                    ),
+                                    createElement('div', {},
+                                        createElement('label', { htmlFor: "contact-email", className: "text-sm font-medium mb-2 block" }, "Email *"),
+                                        createElement('input', { 
+                                            id: "contact-email", 
+                                            type: "email",
+                                            value: formData.email, 
+                                            onChange: e => setFormData(p => ({ ...p, email: e.target.value })), 
+                                            placeholder: "your@email.com", 
+                                            className: "w-full bg-input/80 backdrop-blur border-border border rounded-md px-2.5 py-2 text-sm transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20", 
+                                            required: true 
+                                        })
+                                    )
+                                ),
+                                
+                                // Subject
+                                createElement('div', {},
+                                    createElement('label', { htmlFor: "contact-subject", className: "text-sm font-medium mb-2 block" }, "Subject *"),
+                                    createElement('select', { 
+                                        id: "contact-subject", 
+                                        value: formData.subject, 
+                                        onChange: e => setFormData(p => ({ ...p, subject: e.target.value })), 
+                                        className: "w-full bg-input/80 backdrop-blur border-border border rounded-md px-2.5 py-2 text-sm appearance-none transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20", 
+                                        required: true 
+                                    },
+                                        createElement('option', { value: "" }, "Select a subject"),
+                                        createElement('option', { value: "general" }, "General Inquiry"),
+                                        createElement('option', { value: "feedback" }, "Feedback"),
+                                        createElement('option', { value: "collaboration" }, "Collaboration"),
+                                        createElement('option', { value: "support" }, "Support"),
+                                        createElement('option', { value: "business" }, "Business")
+                                    )
+                                ),
+                                
+                                // Message
+                                createElement('div', {},
+                                    createElement('label', { htmlFor: "contact-message", className: "text-sm font-medium mb-2 block" }, "Message *"),
+                                    createElement('textarea', { 
+                                        id: "contact-message", 
+                                        value: formData.message, 
+                                        onChange: e => setFormData(p => ({ ...p, message: e.target.value })), 
+                                        placeholder: "Tell us what's on your mind...", 
+                                        rows: 3,
+                                        className: "w-full bg-input/80 backdrop-blur border-border border rounded-md px-2.5 py-2 text-sm transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none", 
+                                        required: true 
+                                    })
+                                ),
+                                
+                                // Submit Button
+                                createElement(Button, { 
+                                    type: "submit", 
+                                    size: "lg", 
+                                    className: "w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 transition-all duration-300" 
+                                },
+                                    createElement(Icon, { name: 'send', className: "mr-2 h-5 w-5" }),
+                                    "Send Message"
+                                )
+                            )
+                        ),
+                        
+                        // Contact Information and Extras
+                        createElement('div', { className: "space-y-4" },
+                            // Contact Information
+                            createElement('div', {},
+                                createElement('h3', { className: "font-bold text-lg mb-4" }, "Contact Information"),
+                                createElement('div', { className: "space-y-2" },
+                                    ...contactInfo.map(contact =>
+                                        createElement('div', { key: contact.title, className: "flex items-start space-x-2.5 p-2.5 bg-card/30 backdrop-blur border border-border rounded-lg hover:border-primary/30 transition-all duration-300" },
+                                            createElement('div', { className: `w-8 h-8 bg-gradient-to-br ${contact.color} rounded-md flex items-center justify-center flex-shrink-0` },
+                                                createElement(Icon, { name: contact.icon, className: "h-4 w-4 text-white" })
+                                            ),
+                                            createElement('div', {},
+                                                createElement('h4', { className: "font-semibold text-xs mb-0.5" }, contact.title),
+                                                createElement('p', { className: "text-foreground font-medium text-xs" }, contact.value),
+                                                createElement('p', { className: "text-muted-foreground text-xs" }, contact.subtitle)
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                            
+                            // Social Media
+                            createElement('div', {},
+                                createElement('h3', { className: "font-bold text-base mb-2" }, "Follow Us"),
+                                createElement('div', { className: "flex flex-wrap gap-1.5" },
+                                    ...socialLinks.map(social =>
+                                        createElement('a', { 
+                                            key: social.label, 
+                                            href: social.href, 
+                                            target: "_blank", 
+                                            rel: "noopener noreferrer", 
+                                            'aria-label': social.label, 
+                                            className: `p-2 ${social.color} text-white rounded-md transition-all duration-300 transform hover:scale-105` 
+                                        },
+                                            createElement(Icon, { name: social.icon, className: "h-3.5 w-3.5" })
+                                        )
+                                    )
+                                )
+                            ),
+                            
+                            // Quick Answers
+                            createElement('div', {},
+                                createElement('h3', { className: "font-bold text-base mb-2" }, "Quick Answers"),
+                                createElement('div', { className: "space-y-2" },
+                                    ...faqItems.map((faq, index) =>
+                                        createElement('div', { key: index, className: "bg-card/30 backdrop-blur border border-border rounded-md p-2.5" },
+                                            createElement('h4', { className: "font-semibold text-xs mb-0.5" }, faq.question),
+                                            createElement('p', { className: "text-muted-foreground text-xs" }, faq.answer)
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        }
+
+        function Footer() {
+            const [ref, isVisible] = useScrollAnimation({ threshold: 0.1 });
+
+            return createElement('footer', { ref: ref, className: cn("relative border-t border-border/40 py-8 reveal", isVisible && "visible") },
+                createElement('div', { className: "absolute inset-0 bg-gradient-to-t from-card/20 to-transparent" }),
+                 createElement('div', { className: "container mx-auto px-4 sm:px-6 lg:px-8 relative z-10" },
+                    createElement('div', { className: "flex flex-col items-center space-y-4" },
+                        createElement('div', { className: "text-center" },
+                             createElement('div', { className: "flex items-center justify-center space-x-2 mb-2" },
+                                createElement('div', { className: "h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center relative shadow-lg" },
+                                    createElement('div', { className: "absolute inset-0.5 bg-white/10 rounded-lg backdrop-blur-sm" }),
+                                    createElement('svg', { className: "h-6 w-6 text-white relative z-10", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2" },
+                                        createElement('path', { d: "M9.5 2A2.5 2.5 0 0 1 12 4.5A2.5 2.5 0 0 1 14.5 2H21a1 1 0 0 1 1 1v6.5a2.5 2.5 0 0 1-2.5 2.5A2.5 2.5 0 0 1 17 14.5V21a1 1 0 0 1-1 1H9.5A2.5 2.5 0 0 1 7 19.5A2.5 2.5 0 0 1 4.5 22H3a1 1 0 0 1-1-1v-6.5A2.5 2.5 0 0 1 4.5 12A2.5 2.5 0 0 1 7 9.5V3a1 1 0 0 1 1-1h1.5z" }),
+                                        createElement('circle', { cx: "12", cy: "12", r: "2", fill: "currentColor" }),
+                                        createElement('path', { d: "M8 8l2 2M16 8l-2 2M8 16l2-2M16 16l-2-2", strokeWidth: "1.5" })
+                                    )
+                                ),
+                                createElement('span', { className: "font-playfair font-bold text-xl text-foreground" }, "Brandify")
+                            ),
+                            createElement('p', { className: "text-sm text-muted-foreground" }, "Free AI-powered brand name generator")
+                        ),
+                        createElement('div', { className: "text-center space-y-1" },
+                            createElement('p', { className: "text-xs text-muted-foreground" }, "© 2025 Brandify. Built By IleshDevX with ❤️  for entrepreneurs."),
+                            createElement('p', { className: "text-xs text-muted-foreground/60" }, "Names generated are free for personal use.")
+                        )
+                    )
+                )
+            );
+        }
+        
+        
+         function FavoritesModal({ isOpen, onClose, favorites, onRemoveFavorite }) {
+            const [copiedId, setCopiedId] = useState(null);
+
+            const copyToClipboard = (text, id) => {
+                navigator.clipboard.writeText(text).then(() => {
+                    setCopiedId(id);
+                    setTimeout(() => setCopiedId(null), 2000);
+                });
+            };
+
+            if (!isOpen) return null;
+
+            return createElement('div', { className: "fixed inset-0 z-50 flex items-center justify-center p-4", onClick: onClose },
+                createElement('div', { className: "absolute inset-0 bg-background/80 backdrop-blur-sm" }),
+                createElement('div', { className: "relative w-full max-w-4xl max-h-[80vh] bg-card border border-border rounded-xl shadow-2xl overflow-hidden", onClick: e => e.stopPropagation() },
+                    createElement('div', { className: "flex items-center justify-between p-6 border-b border-border" },
+                        createElement('div', {},
+                            createElement('h2', { className: "font-playfair font-bold text-2xl text-card-foreground" }, "Your Favorite Names"),
+                            createElement('p', { className: "text-muted-foreground mt-1" }, `${favorites.length} ${favorites.length === 1 ? 'favorite' : 'favorites'} saved`)
+                        ),
+                        createElement(Button, { variant: "ghost", size: "icon", onClick: onClose }, createElement(Icon, { name: 'x' }))
+                    ),
+                    createElement('div', { className: "p-6 overflow-y-auto max-h-[calc(80vh-100px)]" },
+                        favorites.length === 0 ? (
+                            createElement('div', { className: "text-center py-12" },
+                                createElement(Icon, { name: 'heart', className: "h-12 w-12 text-muted-foreground mx-auto mb-4" }),
+                                createElement('h3', { className: "font-medium text-lg text-card-foreground mb-2" }, "No favorites yet"),
+                                createElement('p', { className: "text-muted-foreground" }, "Start generating names and click the heart icon to save them!")
+                            )
+                        ) : (
+                            createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-4" },
+                                ...favorites.map(nameData => 
+                                    createElement('div', { key: nameData.id, className: "bg-card/50 backdrop-blur border-border/50 rounded-lg p-4" },
+                                         createElement('div', { className: "flex items-start justify-between mb-3" },
+                                            createElement('div', { className: 'flex-1' },
+                                                createElement('h3', { className: "font-playfair font-bold text-lg text-card-foreground mb-1" }, nameData.name),
+                                                createElement('p', { className: "text-muted-foreground text-sm" }, nameData.tagline)
+                                            ),
+                                            createElement(Button, { variant: "ghost", size: "icon", onClick: () => onRemoveFavorite(nameData.id) },
+                                                createElement(Icon, { name: 'heart', className: "h-4 w-4 fill-current text-red-500" })
+                                            )
+                                        ),
+                                        createElement('div', { className: 'space-y-3' },
+                                            createElement('div', {className: 'flex flex-wrap gap-1'},
+                                                ...Object.entries(nameData.domains).map(([ext, available]) => 
+                                                    createElement('a', {
+                                                        key: ext, 
+                                                        href: `https://www.namecheap.com/domains/registration/results/?domain=${nameData.name.toLowerCase().replace(/\s+/g, "")}.${ext}`,
+                                                        target: "_blank",
+                                                        rel: "noopener noreferrer"
+                                                    },
+                                                        createElement('span', {className: cn("text-xs px-2 py-1 rounded", available ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground')}, `.${ext} ${available ? '✓' : '✗'}`, createElement(Icon, {name: 'externalLink', className: 'inline ml-1 h-2 w-2'}))
+                                                    )
+                                                )
+                                            ),
+                                            createElement(Button, { variant: "outline", size: "sm", className: "w-full text-xs", onClick: () => copyToClipboard(nameData.name, nameData.id) },
+                                                copiedId === nameData.id ? 'Copied!' : createElement(React.Fragment, null, createElement(Icon, { name: 'copy', className: "mr-1 h-3 w-3" }), 'Copy')
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        }
+
+
+        function HomePage() {
+            const [generatedNames, setGeneratedNames] = useState([]);
+            const [favorites, setFavorites] = useState([]);
+            const [isGenerating, setIsGenerating] = useState(false);
+            const [showFavorites, setShowFavorites] = useState(false);
+            const formRef = useRef(null);
+            
+            const handleGenerate = async (formData) => {
+                setIsGenerating(true);
+                const newNames = await generateNames(formData);
+                setGeneratedNames(newNames);
+                setIsGenerating(false);
+                setTimeout(() => {
+                    document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            };
+            
+             const handleGenerateMore = async () => {
+                setIsGenerating(true);
+                const newNames = await generateNames({ industry: "Tech", keywords: [], tone: "modern", length: "medium" });
+                setGeneratedNames(prev => [...prev, ...newNames]);
+                setIsGenerating(false);
+            };
+
+            const handleToggleFavorite = (nameId) => {
+                setFavorites(prev => {
+                    const existingName = generatedNames.find(name => name.id === nameId);
+                    if (!existingName) return prev;
+                    if (prev.includes(nameId)) {
+                        return prev.filter(id => id !== nameId);
+                    } else {
+                        return [...prev, nameId];
+                    }
+                });
+            };
+            
+            const handleRemoveFavorite = (nameId) => {
+                 setFavorites(prev => prev.filter(id => id !== nameId));
+            };
+
+            const handleScrollToForm = () => {
+                formRef.current?.scrollIntoView({ behavior: 'smooth' });
+            };
+
+            const favoriteNames = generatedNames.filter(name => favorites.includes(name.id));
+
+            return createElement('div', { className: "min-h-screen bg-background" },
+                createElement(Header, { onShowFavorites: () => setShowFavorites(true), favoritesCount: favorites.length }),
+                createElement('main', null,
+                    createElement(HeroSection, { onScrollToForm: handleScrollToForm }),
+                    createElement('div', { ref: formRef }, 
+                        createElement(NameGeneratorForm, { onGenerate: handleGenerate, isGenerating: isGenerating })
+                    ),
+                    createElement(ResultsSection, { names: generatedNames, favorites, onToggleFavorite: handleToggleFavorite, onGenerateMore: handleGenerateMore, isGenerating: isGenerating }),
+                    createElement(AboutSection),
+                    createElement(GetInTouchSection),
+                    createElement(Footer)
+                ),
+                createElement(FavoritesModal, { isOpen: showFavorites, onClose: () => setShowFavorites(false), favorites: favoriteNames, onRemoveFavorite: handleRemoveFavorite })
+            );
+        }
+
+        const root = createRoot(document.getElementById('app'));
+        root.render(createElement(StrictMode, null, createElement(HomePage)));
+    </script>
+</body>
+</html>
